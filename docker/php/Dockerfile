@@ -1,9 +1,10 @@
-FROM php:7.4
+FROM php:latest
 
 # APT packages
 RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     libzip-dev \
+    apache2 \
     git \
     && rm -rf /var/lib/apt/lists/*
 
@@ -18,6 +19,9 @@ RUN pecl install xdebug \
 # XDebug configuration
 COPY config/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
+# PHP configuration
+COPY config/php.ini /usr/local/etc/php/php.ini
+
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --filename=composer --install-dir=/usr/local/bin
 
@@ -25,7 +29,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --filename=composer --in
 RUN chsh -s /bin/bash www-data
 
 # Tests
-RUN mkdir /tmp/ivory-google-map && chmod 777 /tmp/ivory-google-map
+RUN mkdir -p /tmp/ivory-google-map && chmod 777 /tmp/ivory-google-map
 
 # Workspace
 RUN mkdir -p /var/www && chown www-data:www-data /var/www
